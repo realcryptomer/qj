@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>QA Automation Dashboard</title>
+        <link rel="stylesheet" href="./styles.css" />
+    </head>
+    <body>
+        <!-- Test Filter UI (initially hidden) -->
+        <div id="test-filter-overlay" class="filter-overlay hidden">
+            <div class="filter-container">
+                <div class="filter-header">
+                    <h2>Select Tests to Run</h2>
+                    <div class="filter-controls">
+                        <div class="search-container">
+                            <input
+                                type="text"
+                                id="test-search"
+                                class="search-input"
+                                placeholder="Search" />
+                            <button id="clear-search" class="clear-button hidden">
+                                &times;
+                            </button>
+                        </div>
+                        <button id="select-all" class="btn btn-secondary">
+                            Select All
+                        </button>
+                        <button id="deselect-all" class="btn btn-secondary">
+                            Deselect All
+                        </button>
+                    </div>
+                </div>
+                <div class="filter-list-container">
+                    <div id="test-filter-list" class="filter-list">
+                        <!-- Test items will be populated by JavaScript -->
+                    </div>
+                </div>
+                <div class="filter-footer">
+                    <button id="run-selected" class="btn btn-primary" disabled>
+                        Run Selected Tests
+                    </button>
+                    <div class="selected-count">
+                        <span id="selected-count">0</span> tests selected
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="header">
+            <div class="header-content">
+                <div class="filter-bar">
+                    <div class="view-toggle-section">
+                        <div class="view-toggle">
+                            <button
+                                class="view-btn active"
+                                data-view="grid"
+                                aria-label="Grid view">
+                                <svg
+                                    class="view-icon"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor">
+                                    <path
+                                        d="M20.25 4.5H3.75C3.35218 4.5 2.97064 4.65804 2.68934 4.93934C2.40804 5.22064 2.25 5.60218 2.25 6V18C2.25 18.3978 2.40804 18.7794 2.68934 19.0607C2.97064 19.342 3.35218 19.5 3.75 19.5H20.25C20.6478 19.5 21.0294 19.342 21.3107 19.0607C21.592 18.7794 21.75 18.3978 21.75 18V6C21.75 5.60218 21.592 5.22064 21.3107 4.93934C21.0294 4.65804 20.6478 4.5 20.25 4.5ZM9.75 13.5V10.5H14.25V13.5H9.75ZM14.25 15V18H9.75V15H14.25ZM3.75 10.5H8.25V13.5H3.75V10.5ZM9.75 9V6H14.25V9H9.75ZM15.75 10.5H20.25V13.5H15.75V10.5ZM20.25 9H15.75V6H20.25V9ZM8.25 6V9H3.75V6H8.25ZM3.75 15H8.25V18H3.75V15ZM20.25 18H15.75V15H20.25V18Z" />
+                                </svg>
+                            </button>
+                            <button
+                                class="view-btn"
+                                data-view="columns"
+                                aria-label="Columns view">
+                                <svg
+                                    class="view-icon"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor">
+                                    <path
+                                        d="M9.75 3H6C5.60218 3 5.22064 3.15804 4.93934 3.43934C4.65804 3.72064 4.5 4.10218 4.5 4.5V19.5C4.5 19.8978 4.65804 20.2794 4.93934 20.5607C5.22064 20.842 5.60218 21 6 21H9.75C10.1478 21 10.5294 20.842 10.8107 20.5607C11.092 20.2794 11.25 19.8978 11.25 19.5V4.5C11.25 4.10218 11.092 3.72064 10.8107 3.43934C10.5294 3.15804 10.1478 3 9.75 3ZM9.75 19.5H6V4.5H9.75V19.5ZM18 3H14.25C13.8522 3 13.4706 3.15804 13.1893 3.43934C12.908 3.72064 12.75 4.10218 12.75 4.5V19.5C12.75 19.8978 12.908 20.2794 13.1893 20.5607C13.4706 20.842 13.8522 21 14.25 21H18C18.3978 21 18.7794 20.842 19.0607 20.5607C19.342 20.2794 19.5 19.8978 19.5 19.5V4.5C19.5 4.10218 19.342 3.72064 19.0607 3.43934C18.7794 3.15804 18.3978 3 18 3ZM18 19.5H14.25V4.5H18V19.5Z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="filter-controls">
+                        <div class="filter-group">
+                            <div class="filter-checkbox">
+                                <input
+                                    type="checkbox"
+                                    id="filter-pending"
+                                    value="pending"
+                                    checked />
+                                <label for="filter-pending">
+                                    <span class="filter-label">Pending</span>
+                                    <span class="filter-count pending">0</span>
+                                </label>
+                            </div>
+                            <div class="filter-checkbox">
+                                <input
+                                    type="checkbox"
+                                    id="filter-running"
+                                    value="running"
+                                    checked />
+                                <label for="filter-running">
+                                    <span class="filter-label">Running</span>
+                                    <span class="filter-count running">2</span>
+                                </label>
+                            </div>
+                            <div class="filter-checkbox">
+                                <input
+                                    type="checkbox"
+                                    id="filter-completed"
+                                    value="completed"
+                                    checked />
+                                <label for="filter-completed">
+                                    <span class="filter-label">Completed</span>
+                                    <span class="filter-count completed">6</span>
+                                </label>
+                            </div>
+                            <div class="filter-checkbox">
+                                <input
+                                    type="checkbox"
+                                    id="filter-failed"
+                                    value="failed"
+                                    checked />
+                                <label for="filter-failed">
+                                    <span class="filter-label">Failed</span>
+                                    <span class="filter-count failed">21</span>
+                                </label>
+                            </div>
+                            <div class="filter-checkbox">
+                                <input
+                                    type="checkbox"
+                                    id="filter-aborted"
+                                    value="aborted"
+                                    checked />
+                                <label for="filter-aborted">
+                                    <span class="filter-label">Aborted</span>
+                                    <span class="filter-count aborted">0</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="header-actions">
+                        <button id="external-dashboard-link" class="external-link-btn">
+                            Go to App Dashboard
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-container" id="grid-container">
+            <!-- Session cards will be generated by JavaScript -->
+        </div>
+
+        <!-- Full-screen modal for session details -->
+        <div id="session-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="modal-image-section" id="modal-screenshot-container">
+                        <div class="waiting-placeholder">
+                            <div>
+                                <svg
+                                    width="148"
+                                    height="72"
+                                    viewBox="0 0 148 72"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        fill-rule="evenodd"
+                                        clip-rule="evenodd"
+                                        d="M93.857 59.7554H31.5134C28.8648 59.7554 26.7177 57.6083 26.7177 54.9598C26.7177 52.3112 28.8648 50.1641 31.5134 50.1641H4.79469C2.14611 50.1641 -0.000976562 48.017 -0.000976562 45.3685C-0.000976563 42.7199 2.14611 40.5728 4.79469 40.5728H32.1985C34.847 40.5728 36.9941 38.4257 36.9941 35.7771C36.9941 33.1286 34.847 30.9815 32.1985 30.9815H15.0711C12.4225 30.9815 10.2754 28.8344 10.2754 26.1858C10.2754 23.5372 12.4225 21.3902 15.0711 21.3902H42.4749C39.8263 21.3902 37.6792 19.2431 37.6792 16.5945C37.6792 13.9459 39.8263 11.7988 42.4749 11.7988H81.5253C84.1738 11.7988 86.3209 13.9459 86.3209 16.5945C86.3209 19.2431 84.1738 21.3902 81.5253 21.3902H125.371C128.02 21.3902 130.167 23.5372 130.167 26.1858C130.167 28.8344 128.02 30.9815 125.371 30.9815H140.443C143.092 30.9815 145.239 33.1286 145.239 35.7771C145.239 38.4257 143.092 40.5728 140.443 40.5728H127.427C124.778 40.5728 122.631 42.7199 122.631 45.3685C122.631 48.017 124.778 50.1641 127.427 50.1641H131.537C134.186 50.1641 136.333 52.3112 136.333 54.9598C136.333 57.6083 134.186 59.7554 131.537 59.7554H95.9123C95.5595 59.7554 95.2157 59.7174 94.8846 59.6451C94.5536 59.7174 94.2097 59.7554 93.857 59.7554Z"
+                                        fill="white" />
+                                    <circle
+                                        cx="143.184"
+                                        cy="54.9597"
+                                        r="4.79566"
+                                        fill="white" />
+                                    <rect
+                                        x="34.2529"
+                                        y="9.12695"
+                                        width="46.5864"
+                                        height="46.5864"
+                                        rx="13.0168"
+                                        transform="rotate(-10.2532 34.2529 9.12695)"
+                                        stroke="#2D6DF6"
+                                        stroke-width="3.42547" />
+                                    <rect
+                                        x="38.6846"
+                                        y="12.4531"
+                                        width="39.0504"
+                                        height="38.4137"
+                                        rx="10.2764"
+                                        transform="rotate(-10.2532 38.6846 12.4531)"
+                                        fill="#D7E1FF" />
+                                    <path
+                                        d="M100.397 47.9534L99.6608 52.9182C98.4901 60.8099 93.1021 64.8187 85.2349 63.6516L67.123 60.9647C61.6117 60.1471 57.979 57.2374 56.7313 52.8424L56.9948 52.7042L68.6899 47.1272C70.5926 46.213 73.0156 46.7054 74.3507 48.2772L74.9955 48.9933C76.4658 50.6959 79.1891 51.0999 81.0904 49.8974L91.2297 43.4914C93.131 42.2889 95.8543 42.6929 97.3246 44.3956L100.397 47.9534Z"
+                                        fill="#D7E1FF" />
+                                    <path
+                                        d="M96.9384 35.0892L95.0317 33.1909C92.4853 31.6638 94.5456 30.6546 95.0317 27.7315L97.2809 20.7023C97.434 19.7816 95.1308 20.6304 95.5682 20.0172C97.6858 20.3276 95.0311 18.6679 95.0078 18.664L73.4996 15.4185C65.0128 14.0072 59.1227 18.1605 57.7295 26.5385L54.5222 45.8264C54.105 48.3352 54.1844 50.5955 54.7409 52.5802L55.0279 52.4388L67.7623 46.7508C69.8342 45.8181 72.4459 46.3943 73.864 48.0966L74.5496 48.8729C76.1117 50.7174 79.0495 51.206 81.1246 49.9663L92.1902 43.3622C94.2653 42.1225 97.2031 42.6111 98.7652 44.4556L102.03 48.3099L103.982 37.6207C103.982 36.9356 102.955 37.6207 102.955 37.6207C99.8717 36.9356 97.966 35.7743 96.9384 35.0892Z"
+                                        fill="white" />
+                                    <path
+                                        d="M73.2627 33.5951C75.8202 33.9745 78.2011 32.2088 78.5805 29.6512C78.9599 27.0937 77.1942 24.7129 74.6367 24.3335C72.0791 23.9541 69.6983 25.7198 69.3189 28.2773C68.9395 30.8348 70.7052 33.2157 73.2627 33.5951Z"
+                                        stroke="#2D6DF6"
+                                        stroke-width="3.51111"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                    <path
+                                        d="M85.2721 16.4444L76.0105 15.0704C64.4335 13.353 59.1158 17.2968 57.3983 28.8738L55.3374 42.7662C53.6199 54.3432 57.5637 59.661 69.1407 61.3784L83.0331 63.4394C94.6101 65.1568 99.9279 61.213 101.645 49.636L103.363 38.059"
+                                        stroke="#2D6DF6"
+                                        stroke-width="3.51111"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                    <path
+                                        d="M94.7877 32.0545L96.8486 18.1621L100.792 23.4799"
+                                        stroke="#2D6DF6"
+                                        stroke-width="3.51111"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                    <path
+                                        d="M96.8495 18.1635L91.5318 22.1074"
+                                        stroke="#2D6DF6"
+                                        stroke-width="3.51111"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                    <path
+                                        d="M55.5318 52.1447L68.0837 46.1741C70.0949 45.2183 72.7138 45.7488 74.1482 47.4051L74.8127 48.1899C76.3886 50.0091 79.306 50.4419 81.3421 49.1585L92.2005 42.3215C94.2366 41.0381 97.154 41.4709 98.7299 43.2901L102.023 47.0916"
+                                        stroke="#2D6DF6"
+                                        stroke-width="3.51111"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                            </div>
+                            <div class="placeholder-text">Waiting to start...</div>
+                        </div>
+                    </div>
+                    <div class="modal-text-section">
+                        <div class="modal-text-header">
+                            <button id="modal-close-btn" class="modal-close-btn">
+                                <svg
+                                    width="12"
+                                    height="12"
+                                    viewBox="0 0 12 12"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        opacity="0.8"
+                                        d="M7.09938 5.99991L11.7719 10.6727C12.076 10.9767 12.076 11.4681 11.7719 11.772C11.468 12.076 10.9766 12.076 10.6726 11.772L5.99993 7.09924L1.32737 11.772C1.02329 12.076 0.532001 12.076 0.228062 11.772C-0.0760206 11.4681 -0.0760206 10.9767 0.228062 10.6727L4.90062 5.99991L0.228062 1.32711C-0.0760206 1.02317 -0.0760206 0.531729 0.228062 0.227782C0.379533 0.0761652 0.578696 0 0.777716 0C0.976736 0 1.17576 0.0761652 1.32737 0.227782L5.99993 4.90058L10.6726 0.227782C10.8242 0.0761652 11.0233 0 11.2223 0C11.4213 0 11.6203 0.0761652 11.7719 0.227782C12.076 0.531729 12.076 1.02317 11.7719 1.32711L7.09938 5.99991Z"
+                                        fill="#0D062D" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="modal-text-content">
+                            <div class="modal-status-row">
+                                <div id="modal-status-badge" class="modal-status-badge">
+                                    Completed
+                                </div>
+                                <div id="modal-timing" class="modal-timing">
+                                    <span id="modal-timing-text" />
+                                </div>
+                            </div>
+                            <div id="modal-session-info" class="modal-session-info">
+                                <!-- Session details will be populated here -->
+                            </div>
+                        </div>
+                        <div class="modal-spacer"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="./script.js"></script>
+    </body>
+</html>
